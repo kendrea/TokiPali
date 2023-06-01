@@ -1,6 +1,10 @@
 - [ ] download dataset (Stan)
 - [ ] tokenizer
 - [ ] embedding
+  - [ ] learned
+  - [ ] learned from our best-guess starting point
+  - [ ] our best guess
+  - [ ] one-hot
 - [ ] clean & scale & clean & scale data
 - [ ] train (Stan)
 - [ ] profit
