@@ -1,7 +1,8 @@
 - [ ] download dataset (Stan)
-- [ ] make tokenizer (Kendrea)
-- [ ] clean & scale & clean & scale data (Gabriel)
+- [ ] tokenizer
+- [ ] embedding
+- [ ] clean & scale & clean & scale data
 - [ ] train (Stan)
-- [ ] profit (Kendrea)
+- [ ] profit
 - [ ] post-processing
 - [ ] evaluation 
