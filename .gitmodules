@@ -1,0 +1,3 @@
+[submodule "toki-pona-dataset"]
+	path = tokidata/toki-pona-dataset
+	url = https://github.com/adam-mcdaniel/toki-pona-dataset
