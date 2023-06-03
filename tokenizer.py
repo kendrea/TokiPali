@@ -15,9 +15,12 @@ def string_to_tokens(string: str) -> list[int]:
     Convert a plain ASCII string to a list of token IDs.
     Preprocesses to ignore garbage and normalize stuff.
     """
-    split = string.split(' ')
+    split = string.strip(' ').split(' ')
     tokens = []
     for word in split:
+        if not word:
+            continue
+
         # punctuation before word
         if word[0] in no_space_after:
             tokens.append(word_to_token[word[0]])
