@@ -25,12 +25,14 @@ Let's try both.
 - According to various internet sources, GPT-2 is decoder-only. But the source code has an [encoder file](https://github.com/openai/gpt-2/tree/master/src).
 
 ### Parameter distribution for our model
+Stefan recommends using PyTorch `.parameters()` to count total number of parameters. Don't worry about distributing parameters in a similar pattern to the original GPT-2; just guess and check to get a model that works and has roughly the correct number of parameters.
+
 - [https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html](https://pytorch.org/docs/stable/generated/torch.nn.Transformer.html)
 	- d_model - # expected features in encoder/decoder inputs
-	- nhead - # heads in multiheadattention models
+	- nhead - # heads in multiheadattention models (linear)
 	- dim_feedforward
 - Additional parameters
-	- n_layers
+	- n_layers (linear)
 - [How to estimate the number of parameters in a transformer](https://towardsdatascience.com/how-to-estimate-the-number-of-parameters-in-transformer-models-ca0f57d8dff0)
 	- For a transformer encoder: $4d_{model}^{2}+ 2d_{model}d_{ff} + 9d_{model} + d_{ff}$ 
 	- For a transformer decoder: $8d_{model}^{2}+ 2d_{model}d_{ff} + 15d_{model} + d_{ff}$ 
