@@ -3,6 +3,7 @@ Convert between Toki Pona strings and token ID lists
 """
 from vocab import normal_words, punctuation, equivalence
 from vocab import no_space_before, no_space_after
+from translations import tokipona_to_en
 
 token_to_word = dict(enumerate(normal_words + punctuation))
 vocab_size = len(token_to_word)
@@ -91,10 +92,20 @@ def tokens_to_tokipona(tokens: list[int]) -> str:
     return " ".join(to_join)
 
 
-def tokens_to_english(tokens: list[int]) -> str:
+def tokens_to_english(tokens: list[int]) -> None:
     """
     Hilarious non-AI translation.
     Convert list of tokens to list of Toki Pona words,
     then look up and substitute a translation of each.
     """
-    raise NotImplementedError()
+    for token in tokens:
+        word = token_to_word[token]
+        print(word, end='')
+        if word in normal_words:
+            defs = tokipona_to_en[word]
+            print(' '*(16-len(word)), str(defs[0]))
+            if len(defs) != 1:
+                for d in defs[1:]:
+                    print(' '*16, str(d))
+        else:
+            print()
