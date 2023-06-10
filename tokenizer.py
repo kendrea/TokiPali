@@ -5,6 +5,7 @@ from vocab import normal_words, punctuation, equivalence
 from vocab import no_space_before, no_space_after
 
 token_to_word = dict(enumerate(normal_words + punctuation))
+vocab_size = len(token_to_word)
 word_to_token = {}
 for key, value in token_to_word.items():
     word_to_token[value] = key

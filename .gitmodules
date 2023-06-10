@@ -1,3 +1,6 @@
 [submodule "toki-pona-dataset"]
 	path = tokidata/toki-pona-dataset
 	url = https://github.com/adam-mcdaniel/toki-pona-dataset
+[submodule "gpt-2-Pytorch"]
+	path = gpt2torch
+	url = https://github.com/graykode/gpt-2-Pytorch
