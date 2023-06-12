@@ -1,7 +1,7 @@
-from gpt2torch.GPT2.model import GPT2Model 
-from gpt2torch.GPT2.config import GPT2Config 
+from gpt2torch.GPT2.model import GPT2Model
+from gpt2torch.GPT2.config import GPT2Config
 
-from tokenizer import vocab_size
+from vocab import vocab_size
 
 from torch.utils.data import Dataset, DataLoader
 

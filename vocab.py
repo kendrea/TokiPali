@@ -33,8 +33,16 @@ normal_words = [
 ]
 
 punctuation = [
-    '.', '?', '!', ','
+    '.', '?', '!', ',', ':'
 ]
+
+markers = ['SOS', 'EOS']  # start of stream, end of stream
+
+token_to_word = dict(enumerate(markers + punctuation + normal_words))
+vocab_size = len(token_to_word)
+word_to_token = {}
+for key, value in token_to_word.items():
+    word_to_token[value] = key
 
 # special rules for sentences -> tokens
 # remove left, use right instead
@@ -53,8 +61,6 @@ equivalence = {
     'tuli': 'luka',  # 3->5
 
     # punctuation
-    ':': '.',
     ';': '.',
     '-': '.',
-    '~': '.',
 }

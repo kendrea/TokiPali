@@ -2,13 +2,8 @@
 Convert between Toki Pona strings and token ID lists
 """
 from vocab import normal_words, punctuation, equivalence
+from vocab import token_to_word, word_to_token
 from translations import tokipona_to_en
-
-token_to_word = dict(enumerate(normal_words + punctuation))
-vocab_size = len(token_to_word)
-word_to_token = {}
-for key, value in token_to_word.items():
-    word_to_token[value] = key
 
 
 def string_to_tokens(string: str) -> list[int]:
@@ -17,7 +12,7 @@ def string_to_tokens(string: str) -> list[int]:
     Preprocesses to ignore garbage and normalize stuff.
     """
     split = string.strip(' ').split(' ')
-    tokens = []
+    tokens = [word_to_token["SOS"]]
     for word in split:
         if not word:
             continue
@@ -71,6 +66,7 @@ def string_to_tokens(string: str) -> list[int]:
             if chunk in word_to_token:
                 tokens.append(word_to_token[chunk])
 
+    tokens.append(word_to_token["EOS"])
     return tokens
 
 
