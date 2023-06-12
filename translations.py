@@ -42,9 +42,10 @@ class TranslationEntry:
 tokipona_to_en = {}  # filled below
 
 
-#  https://jan-ne.github.io/tp/dictionary
+# https://jan-ne.github.io/tp/dictionary
+# Changes after paste: prefer ale, a, lukin, sin. Remove line wrapping
 _DICT_STR = """
-a or kin
+a
      PARTICLE: (emphasis, emotion or confirmation)
 akesi
      NOUN: non-cute animal; reptile, amphibian
@@ -52,7 +53,7 @@ ala
      ADJECTIVE: no, not, zero
 alasa
      VERB: to hunt, forage
-ale or ali
+ale
      ADJECTIVE: all; abundant, countless, bountiful, every, plentiful
      NOUN: abundance, everything, life, universe
      NUMBER: 100
@@ -144,7 +145,7 @@ lon
 luka
      NOUN: arm, hand, tactile organ
      NUMBER: five
-lukin or oko
+lukin
      NOUN: eye
      VERB: to look at, see, examine, observe, read, watch
      PRE-VERB: to seek, look for, try to
@@ -246,7 +247,7 @@ sijelo
 sike
      NOUN: round or circular thing; ball, circle, cycle, sphere, wheel
      ADJECTIVE: of one year
-sin or namako
+sin
      ADJECTIVE: new, fresh; additional, another, extra
 sina
      NOUN: you
@@ -311,7 +312,7 @@ for line in _DICT_STR.split('\n'):
     if not line:
         continue
     if line[0] != ' ':
-        WORD = line.split()[0]
+        WORD = line.strip()
         continue
     split = line.strip().split(':')
     if not tokipona_to_en.get(WORD):
@@ -320,11 +321,11 @@ for line in _DICT_STR.split('\n'):
     newdef = TranslationEntry(part, split[1].strip())
     tokipona_to_en[WORD].append(newdef)
 
-# duplicate words. TODO: remove from tokens?
-tokipona_to_en['ali'] = tokipona_to_en['ale']
-tokipona_to_en['kin'] = tokipona_to_en['a']
-tokipona_to_en['oko'] = tokipona_to_en['lukin']
-tokipona_to_en['namako'] = tokipona_to_en['sin']
+# Mostly-duplicate words. There are slight differences in connotation
+# tokipona_to_en['ali'] = tokipona_to_en['ale']
+# tokipona_to_en['kin'] = tokipona_to_en['a']
+# tokipona_to_en['oko'] = tokipona_to_en['lukin']
+# tokipona_to_en['namako'] = tokipona_to_en['sin']
 
 # uncommon words, not in minimal dictionary set. TODO: remove from tokens?
 tokipona_to_en['apeja'] = [

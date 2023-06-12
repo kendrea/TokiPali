@@ -29,6 +29,7 @@ def string_to_tokens(string: str) -> list[int]:
             word = word[1:]  # remove first char
 
         # actual word
+        equivalence.get(word, word)
         if word in word_to_token:
             tokens.append(word_to_token[word])
             continue
@@ -56,6 +57,7 @@ def string_to_tokens(string: str) -> list[int]:
             chunks = [c for c in new_chunks if c != '']
 
         for chunk in chunks:
+            chunk = equivalence.get(chunk, chunk)
             if chunk in word_to_token:
                 tokens.append(word_to_token[chunk])
 
