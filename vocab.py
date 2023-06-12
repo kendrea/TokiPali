@@ -36,7 +36,7 @@ punctuation = [
     '.', '?', '!', ',', ':'
 ]
 
-markers = ['SOS', 'EOS']  # start of stream, end of stream
+markers = ['EOS']  # delimiter
 
 token_to_word = dict(enumerate(markers + punctuation + normal_words))
 vocab_size = len(token_to_word)

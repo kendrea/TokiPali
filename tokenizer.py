@@ -12,7 +12,7 @@ def string_to_tokens(string: str) -> list[int]:
     Preprocesses to ignore garbage and normalize stuff.
     """
     split = string.strip(' ').split(' ')
-    tokens = [word_to_token["SOS"]]
+    tokens = []
     for word in split:
         if not word:
             continue
@@ -66,7 +66,6 @@ def string_to_tokens(string: str) -> list[int]:
             if chunk in word_to_token:
                 tokens.append(word_to_token[chunk])
 
-    tokens.append(word_to_token["EOS"])
     return tokens
 
 
