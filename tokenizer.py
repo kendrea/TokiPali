@@ -28,8 +28,9 @@ def string_to_tokens(string: str) -> list[int]:
         equivalence.get(no_end, no_end)
         if no_end in word_to_token:
             tokens.append(word_to_token[no_end])
-            if equivalence.get(word[-1], word[-1]) in word_to_token:
-                tokens.append(word_to_token[word[-1]])
+            just_end = equivalence.get(word[-1], word[-1])
+            if just_end in word_to_token:
+                tokens.append(word_to_token[just_end])
             continue
 
         # special cases like repeat punctuation (slow)
@@ -44,7 +45,6 @@ def string_to_tokens(string: str) -> list[int]:
                 else:  # unrecognized character
                     chars[i] = ' '
         word = ''.join(chars)
-        print(f"normalized: \"{word}\"")
 
         def separate(lst, item):
             lst = lst.split(item)

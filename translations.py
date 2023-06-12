@@ -330,12 +330,12 @@ for line in _DICT_STR.split('\n'):
 # uncommon words, not in minimal dictionary set.
 tokipona_to_en['monsuta'] = [  # 85% usage
     TranslationEntry(Part.NOUN, "fear, dread, monster, predator, threat")]
-tokipona_to_en['kipisi'] = [  # 73% usage
-    TranslationEntry(Part.VERB, "split, cut, slice, sever"),
-    TranslationEntry(Part.ADJECTIVE, "sharp")]
 tokipona_to_en['leko'] = [  # 72% usage
     TranslationEntry(Part.NOUN, "stairs, square, block, corner, cube"),
     TranslationEntry(Part.ADJECTIVE, "square, blocky")]
+# tokipona_to_en['kipisi'] = [  # 73% usage
+#     TranslationEntry(Part.VERB, "split, cut, slice, sever"),
+#     TranslationEntry(Part.ADJECTIVE, "sharp")]
 # tokipona_to_en['kijetesantakalu'] = [  # 73% usage
 #     TranslationEntry(Part.NOUN, "racoon, ringtail")]
 # tokipona_to_en['majuna'] = [  # 32% usage

@@ -24,10 +24,10 @@ normal_words = [
     'unpa', 'uta', 'utala',
     'walo', 'wan', 'waso', 'wawa', 'weka', 'wile',
     # less normal. Remove?
-    'kipisi',
-    'leko',
-    'monsuta',
-    # 'kijetesantakalu',
+    'leko',  # square, corner
+    'monsuta',  # monster
+    # 'kipisi',  # cut
+    # 'kijetesantakalu',  # raccoon (joke word)
     # # uncommon
     # 'majuna', 'powe', 'apeja', 'po', 'tuli'
 ]
@@ -53,6 +53,7 @@ equivalence = {
     'namako': 'sin',
     # debatable
     'kijetesantakalu': 'soweli',  # raccoon->mammal
+    'kipisi': 'pakala',
     # uncommon
     'majuna': 'suli',  # old->adult
     'powe': 'ike',  # false->bad
