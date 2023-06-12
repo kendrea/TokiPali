@@ -68,3 +68,14 @@ The Chinchilla authors use three approaches:
 
 ## Skipping vs. keeping unknown tokens
 - ChatGPT says skipping unrecognized text makes for a simpler model that is less likely to give nonsensical output
+
+## One-hot vs. dense
+- https://arxiv.org/pdf/1510.00726.pdf
+	- dense and low-dimensional vectors have computational advantage
+	- main benefit of dense embeddings: if similar features have similar vectors, then model can generalize better; if a rare token has a similar embedding to a common token, the model can use info about the common token to better guess how to use the rare token (source: https://jmlr.org/papers/volume3/bengio03a/bengio03a.pdf)
+	- it may be appropriate to use sparse one-hot encoding when:
+		- small number of tokens
+		- tokens aren't meaningfully correlated
+		- lots of training data
+		- don't want to share statistical information between words
+	- we have a small number of tokens, and tokens are less correlated in Toki Pona than in English, but we don't have much training data and it's fine to share statistical information between words
