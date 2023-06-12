@@ -24,26 +24,17 @@ normal_words = [
     'unpa', 'uta', 'utala',
     'walo', 'wan', 'waso', 'wawa', 'weka', 'wile',
     # less normal. Remove?
-    'apeja', 'kijetesantakalu', 'kipisi', 'leko',
-    'majuna', 'monsuta', 'po', 'powe', 'tuli'
+    'kipisi',
+    'leko',
+    'monsuta',
+    # 'kijetesantakalu',
+    # # uncommon
+    # 'majuna', 'powe', 'apeja', 'po', 'tuli'
 ]
 
 punctuation = [
-    '.', '?', '!', ',',  # basic needs
-    '"', ':', ';', '*', '#', '\n', '(', ')',  # markdown and more complex
+    '.', '?', '!', ','
 ]
-
-
-# special rules for tokens -> sentences
-no_space_before = [
-    '.', '?', '!', ',',
-    ':', ';', '\n', ')'
-]
-
-no_space_after = [
-    '(', '\n'
-]
-
 
 # special rules for sentences -> tokens
 # remove left, use right instead
@@ -51,16 +42,19 @@ equivalence = {
     'ali': 'ale',
     'kin': 'a',
     'oko': 'lukin',
-    'namako': 'sin'
-}
-_punct_equiv = {
-    ('\'', '`', '“', '”'): '"',
-    ('-', '~', '=', '_', '\\', '|', '+'): '*',
-    ('[', '{', '<'): '(',
-    (']', '}', '>'): ')',
-}
+    'namako': 'sin',
+    # debatable
+    'kijetesantakalu': 'soweli',  # raccoon->mammal
+    # uncommon
+    'majuna': 'suli',  # old->adult
+    'powe': 'ike',  # false->bad
+    'apeja': 'alasa',  # embarrass->hunt
+    'po': 'luka',  # 4->5
+    'tuli': 'luka',  # 3->5
 
-# turn the above into a 1-1 lookup
-for k, v in _punct_equiv.items():
-    for key in k:
-        equivalence[key] = v
+    # punctuation
+    ':': '.',
+    ';': '.',
+    '-': '.',
+    '~': '.',
+}

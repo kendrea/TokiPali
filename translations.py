@@ -327,29 +327,29 @@ for line in _DICT_STR.split('\n'):
 # tokipona_to_en['oko'] = tokipona_to_en['lukin']
 # tokipona_to_en['namako'] = tokipona_to_en['sin']
 
-# uncommon words, not in minimal dictionary set. TODO: remove from tokens?
-tokipona_to_en['apeja'] = [
-    TranslationEntry(Part.NOUN, "guilt, shame, stigma"),
-    TranslationEntry(Part.VERB, "shun, accuse, expose, dishonor, embarrass")]
-tokipona_to_en['kijetesantakalu'] = [
-    TranslationEntry(Part.NOUN, "racoon, ringtail")]
-tokipona_to_en['kipisi'] = [
+# uncommon words, not in minimal dictionary set.
+tokipona_to_en['monsuta'] = [  # 85% usage
+    TranslationEntry(Part.NOUN, "fear, dread, monster, predator, threat")]
+tokipona_to_en['kipisi'] = [  # 73% usage
     TranslationEntry(Part.VERB, "split, cut, slice, sever"),
     TranslationEntry(Part.ADJECTIVE, "sharp")]
-tokipona_to_en['leko'] = [
+tokipona_to_en['leko'] = [  # 72% usage
     TranslationEntry(Part.NOUN, "stairs, square, block, corner, cube"),
     TranslationEntry(Part.ADJECTIVE, "square, blocky")]
-tokipona_to_en['majuna'] = [
-    TranslationEntry(Part.ADJECTIVE, "old, aged, ancient")]
-tokipona_to_en['monsuta'] = [
-    TranslationEntry(Part.NOUN, "fear, dread, monster, predator, threat")]
-tokipona_to_en['po'] = [
-    TranslationEntry(Part.NUMBER, "four")]
-tokipona_to_en['powe'] = [
-    TranslationEntry(Part.ADJECTIVE, "unreal, false, untrue"),
-    TranslationEntry(Part.VERB, "pretend, deceive, trick")]
-tokipona_to_en['tuli'] = [
-    TranslationEntry(Part.NUMBER, "three")]
+# tokipona_to_en['kijetesantakalu'] = [  # 73% usage
+#     TranslationEntry(Part.NOUN, "racoon, ringtail")]
+# tokipona_to_en['majuna'] = [  # 32% usage
+#     TranslationEntry(Part.ADJECTIVE, "old, aged, ancient")]
+# tokipona_to_en['powe'] = [  # 21% usage
+#     TranslationEntry(Part.ADJECTIVE, "unreal, false, untrue"),
+#     TranslationEntry(Part.VERB, "pretend, deceive, trick")]
+# tokipona_to_en['apeja'] = [  # 20% usage
+#     TranslationEntry(Part.NOUN, "guilt, shame, stigma"),
+#     TranslationEntry(Part.VERB, "shun, accuse, expose, dishonor, embarrass")]
+# tokipona_to_en['po'] = [  # 5% usage
+#     TranslationEntry(Part.NUMBER, "four")]
+# tokipona_to_en['tuli'] = [  # 4% usage
+#     TranslationEntry(Part.NUMBER, "three")]
 
 # ensure token list and definition list match
 _t = set(tokipona_to_en.keys())

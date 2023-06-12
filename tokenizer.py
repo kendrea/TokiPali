@@ -2,7 +2,6 @@
 Convert between Toki Pona strings and token ID lists
 """
 from vocab import normal_words, punctuation, equivalence
-from vocab import no_space_before, no_space_after
 from translations import tokipona_to_en
 
 token_to_word = dict(enumerate(normal_words + punctuation))
@@ -23,32 +22,43 @@ def string_to_tokens(string: str) -> list[int]:
         if not word:
             continue
 
-        # punctuation before word
-        if word[0] in no_space_after:
-            tokens.append(word_to_token[word[0]])
-            word = word[1:]  # remove first char
-
-        # actual word
+        # make common case fast
         equivalence.get(word, word)
         if word in word_to_token:
             tokens.append(word_to_token[word])
             continue
 
-        # punctuation after, other special cases
+        # next most common: word with one punctuation after
+        no_end = word[:-1]
+        equivalence.get(no_end, no_end)
+        if no_end in word_to_token:
+            tokens.append(word_to_token[no_end])
+            if equivalence.get(word[-1], word[-1]) in word_to_token:
+                tokens.append(word_to_token[word[-1]])
+            continue
+
+        # special cases like repeat punctuation (slow)
+
+        # first normalize everything
+        word = word.lower()
         chars = list(word)
-        for i, char in enumerate(chars):
-            char = equivalence.get(char, char)
-            chars[i] = char
+        for i, char in enumerate(word):
+            if not char.isalpha():
+                if char in equivalence or char in punctuation:
+                    chars[i] = equivalence.get(char, char)
+                else:  # unrecognized character
+                    chars[i] = ' '
         word = ''.join(chars)
+        print(f"normalized: \"{word}\"")
 
         def separate(lst, item):
             lst = lst.split(item)
             result = [item] * (len(lst)*2 - 1)
             result[0::2] = lst
-            return result
+            return [r for r in result if r != '']
 
         chunks = [word]
-        for punct in punctuation:
+        for punct in punctuation + [' ']:
             if punct not in word:
                 continue
             new_chunks = []
@@ -71,24 +81,9 @@ def tokens_to_tokipona(tokens: list[int]) -> str:
     """
     strs = [token_to_word[t] for t in tokens]
     to_join = []
-    inside_quote = False
     for i, word in enumerate(strs):
-        if word in no_space_before and i != 0:
+        if word in punctuation and i != 0:
             to_join[-1] += word
-            continue
-        if word in no_space_after and i != len(strs)-1:
-            strs[i+1] = strs[i] + strs[i+1]
-            continue
-        if word == '"':
-            if inside_quote:
-                if i != 0:
-                    to_join[-1] += word  # no_space_before
-            elif i != len(strs)-1:
-                strs[i+1] = strs[i] + strs[i+1]  # no_space_after
-            elif i == len(strs)-1:
-                # special case: sentence ends with open quote
-                to_join.append(word)
-            inside_quote = not inside_quote
             continue
         to_join.append(word)
     return " ".join(to_join)
