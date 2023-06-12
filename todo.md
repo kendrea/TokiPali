@@ -1,0 +1,7 @@
+- [x] download dataset
+- [x] tokenizer
+- [x] manual embedding
+- [ ] train
+- [x] post-processing
+- [ ] evaluation
+- [ ] paper
