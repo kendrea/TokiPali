@@ -59,9 +59,13 @@ class Trainer:
         torch.save(raw_model.state_dict(), self.config.ckpt_path)
 
     def train(self):
+        from torch.utils.tensorboard import SummaryWriter
         model, config = self.model, self.config
         raw_model = model.module if hasattr(self.model, "module") else model
         optimizer = raw_model.configure_optimizers(config)
+
+        writer = SummaryWriter()
+
 
         def run_epoch(split):
             is_train = split == "train"
@@ -81,7 +85,10 @@ class Trainer:
                 if is_train
                 else enumerate(loader)
             )
+
             for it, (x, y) in pbar:
+                if it == 0:
+                    writer.add_graph(self.model, x)
 
                 # place data on the correct device
                 x = x.to(self.device)
@@ -94,10 +101,10 @@ class Trainer:
                         loss.mean()
                     )  # collapse all losses if they are scattered on multiple gpus
                     losses.append(loss.item())
-
+                    
                 if is_train:
-
                     # backprop and update the parameters
+                    writer.add_scalar("Loss/train", loss.item(), it + len(loader) * epoch)
                     model.zero_grad()
                     loss.backward()
                     torch.nn.utils.clip_grad_norm_(
@@ -141,16 +148,18 @@ class Trainer:
                 logger.info(f"test loss: {test_loss}")
                 return test_loss
 
+        writer.close()
         best_loss = float("inf")
         self.tokens = 0  # counter used for learning rate decay
         for epoch in range(config.max_epochs):
-
             run_epoch("train")
-            if self.test_dataset is not None:
-                test_loss = run_epoch("test")
+            self.save_checkpoint()
+        writer.close()
+        #    if self.test_dataset is not None:
+        #        test_loss = run_epoch("test")
 
-            # supports early stopping based on the test loss, or just save always is no test set is provided
-            good_model = self.test_dataset is None or test_loss < best_loss
-            if self.config.ckpt_path is not None and good_model:
-                best_loss = test_loss if self.test_dataset is not None else float("inf")
-                self.save_checkpoint()
+        #    # supports early stopping based on the test loss, or just save always is no test set is provided
+        #    good_model = self.test_dataset is None or test_loss < best_loss
+        #    if self.config.ckpt_path is not None and good_model:
+        #        best_loss = test_loss if self.test_dataset is not None else float("inf")
+        #        self.save_checkpoint()

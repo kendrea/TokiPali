@@ -212,7 +212,7 @@ class GPT(nn.Module):
 
     def forward(self, idx, targets=None):
         b, t = idx.size()
-        assert t <= self.block_size, "Cannot forward, model block size is exhausted."
+        #assert t <= self.block_size, "Cannot forward, model block size is exhausted."
 
         # forward the GPT model
         token_embeddings = self.tok_emb(idx)  # each index mapts to a (learnable) vector
@@ -225,8 +225,9 @@ class GPT(nn.Module):
         logits = self.head(x)
 
         # if we are given some desired targets also calculate the loss
-        loss = None
+        loss = torch.asarray([0])
         if targets is not None:
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
-
-        return logits, loss
+            return logits, loss
+        else:
+            return logits
