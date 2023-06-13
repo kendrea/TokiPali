@@ -38,7 +38,8 @@ punctuation = [
 
 markers = ['EOS']  # delimiter
 
-token_to_word = dict(enumerate(markers + punctuation + normal_words))
+token_list = markers + punctuation + normal_words
+token_to_word = dict(enumerate(token_list))
 vocab_size = len(token_to_word)
 word_to_token = {}
 for key, value in token_to_word.items():

@@ -14,6 +14,7 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data.dataloader import DataLoader
 
+from vocab import token_list
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +39,29 @@ class TrainerConfig:
         for k, v in kwargs.items():
             setattr(self, k, v)
 
+    def as_dict(self):
+        return {
+            'max_epochs': self.max_epochs,
+            'batch_size': self.batch_size,
+            'learning_rate': self.learning_rate,
+            'betas': self.betas,
+            'grad_norm_clip': self.grad_norm_clip,
+            'weight_decay': self.weight_decay,
+            'lr_decay': self.lr_decay,
+            'warmup_tokens': self.warmup_tokens,
+            'final_tokens': self.final_tokens,
+            'ckpt_path': self.ckpt_path,
+            'num_workers': self.num_workers,
+        }
+
 
 class Trainer:
-    def __init__(self, model, train_dataset, test_dataset, config):
+    def __init__(self, model, train_dataset, test_dataset, config, model_config):
         self.model = model
         self.train_dataset = train_dataset
         self.test_dataset = test_dataset
         self.config = config
+        self.model_config = model_config
 
         # take over whatever gpus are on the system
         self.device = "cpu"
@@ -86,6 +103,7 @@ class Trainer:
                 else enumerate(loader)
             )
 
+            loss = 10.0
             for it, (x, y) in pbar:
                 if it == 0:
                     writer.add_graph(self.model, x)
@@ -123,15 +141,17 @@ class Trainer:
                                 max(1, config.warmup_tokens)
                             )
                         else:
-                            # cosine learning rate decay
-                            progress = float(
-                                self.tokens - config.warmup_tokens
-                            ) / float(
-                                max(1, config.final_tokens - config.warmup_tokens)
-                            )
-                            lr_mult = max(
-                                0.1, 0.5 * (1.0 + math.cos(math.pi * progress))
-                            )
+                            # exponential learning rate decay
+                            lr_mult = config.lr_decay
+                            # # cosine learning rate decay
+                            # progress = float(
+                            #     self.tokens - config.warmup_tokens
+                            # ) / float(
+                            #     max(1, config.final_tokens - config.warmup_tokens)
+                            # )
+                            # lr_mult = max(
+                            #     0.1, 0.5 * (1.0 + math.cos(math.pi * progress))
+                            # )
                         lr = config.learning_rate * lr_mult
                         for param_group in optimizer.param_groups:
                             param_group["lr"] = lr
@@ -147,12 +167,23 @@ class Trainer:
                 test_loss = float(np.mean(losses))
                 logger.info(f"test loss: {test_loss}")
                 return test_loss
+            else:
+                return loss
 
         writer.close()
         best_loss = float("inf")
         self.tokens = 0  # counter used for learning rate decay
+        hparams = self.config.as_dict() | self.model_config.as_dict()
+        hparams['betas_0'] = hparams['betas'][0]
+        hparams['betas_1'] = hparams['betas'][1]
+        hparams['n_params'] = sum(p.numel() for p in model.parameters())
+        del hparams['betas']
         for epoch in range(config.max_epochs):
-            run_epoch("train")
+            loss = run_epoch("train")
+            print(type(loss.item()), loss.item())
+            writer.add_hparams(hparams, {'hparam/loss': loss.item()})
+            writer.add_embedding(model.module.tok_emb.weight, token_list)
+
             self.save_checkpoint()
         writer.close()
         #    if self.test_dataset is not None:

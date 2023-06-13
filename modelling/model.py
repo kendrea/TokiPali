@@ -24,12 +24,27 @@ class GPTConfig:
     embd_pdrop = 0.1
     resid_pdrop = 0.1
     attn_pdrop = 0.1
+    n_layer = 4
+    n_head = 4
+    n_embd = 16
 
     def __init__(self, vocab_size, block_size, **kwargs):
         self.vocab_size = vocab_size
         self.block_size = block_size
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+    def as_dict(self):
+        return {
+            'embd_pdrop': self.embd_pdrop,
+            'resid_pdrop': self.resid_pdrop,
+            'attn_pdrop': self.attn_pdrop,
+            'n_layer': self.n_layer,
+            'n_head': self.n_head,
+            'n_embd': self.n_embd,
+            'vocab_size': self.vocab_size,
+            'block_size': self.block_size,
+        }
 
 
 class GPT1Config(GPTConfig):

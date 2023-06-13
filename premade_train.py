@@ -93,9 +93,9 @@ from modelling.model import GPT, GPTConfig
 mconf = GPTConfig(
     vocab_size,
     dataset.context_window,
-    n_layer=6,
-    n_head=4,
-    n_embd=64,
+    n_layer=5,  # 5
+    n_head=5,  # 5
+    n_embd=65,  # 65
 )
 
 model = GPT(mconf)
@@ -104,11 +104,11 @@ from modelling.trainer import Trainer, TrainerConfig
 
 # initialize a trainer instance and kick off training
 tconf = TrainerConfig(
-    max_epochs=60,
+    max_epochs=10,
     batch_size=256*2,
-    learning_rate=6e-4,
-    lr_decay=True,
-    warmup_tokens=512*20,
+    learning_rate=5e-3,
+    lr_decay=0.90,
+    warmup_tokens=512*30,
     final_tokens=2*len(dataset)*dataset.context_window,
     num_workers=4,
     ckpt_path="checkpoint.pt",
@@ -116,11 +116,11 @@ tconf = TrainerConfig(
 
 
 def train_new():
-    trainer = Trainer(model, dataset, None, tconf)
+    trainer = Trainer(model, dataset, None, tconf, mconf)
     trainer.train()
 
-def train_restart():
-    trainer = Trainer(model, dataset, None, tconf)
+def train_continue():
+    trainer = Trainer(model, dataset, None, tconf, mconf)
     trainer.model.module.load_state_dict(torch.load("checkpoint.pt"))
     trainer.train()
     #trainer.save_checkpoint()
@@ -138,5 +138,5 @@ def infer(x):
 
 if __name__ == "__main__":
     #infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
-    #train_new()
-    train_restart()
+    train_new()
+    #train_continue()
