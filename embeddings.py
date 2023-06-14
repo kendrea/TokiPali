@@ -20,27 +20,34 @@ punctuation index (1, 2, 3)
 ]
 """
 
+import torch
+import numpy as np
 from vocab import token_list
+
+
+def _make_normalized_tensor(dictionary):
+    def normalize(vec_as_list):
+        vec = np.array(vec_as_list)
+        norm = np.linalg.norm(vec)
+        if norm == 0:
+            return vec
+        return vec / norm
+
+    return torch.Tensor(np.array(list(map(normalize, dictionary.values()))))
 
 
 def find_duplicate_embeddings(dictionary):
     """
-    Ensure no two tokens have the same embeddings.
-    Courtesy of ChatGPT
+    Ensure no two tokens have the same embeddings
     """
-    value_to_keys = {}
-    for key, value in dictionary.items():
-        if isinstance(value, list):
-            value = tuple(value)  # Convert list to tuple for hashability
-        if value not in value_to_keys:
-            value_to_keys[value] = []
-        value_to_keys[value].append(key)
-
     res = True
-    for value, keys in value_to_keys.items():
-        if len(keys) > 1:
-            print("Keys with value", value, ":", keys)
-            res = False
+    for idx_a, item_a in dictionary.items():
+        for idx_b, item_b in dictionary.items():
+            if idx_a == idx_b:
+                continue
+            if item_a == item_b:
+                print(f"{idx_a} and {idx_b} have identical embeddings")
+                res = False
     return res
 
 
@@ -70,13 +77,28 @@ def consistency_check(embeddings, tokens):
     return res
 
 
+def colinear_check(tensor):
+    """
+    Same as duplicate check, but for (pre-normalized) rows of a tensor
+    """
+    res = True
+    for idx_a in range(tensor.shape[0]):
+        for idx_b in range(tensor.shape[0]):
+            if idx_a == idx_b:
+                continue
+            if np.array_equal(tensor[idx_a, :], tensor[idx_b, :]):
+                print(f"{idx_a} and {idx_b} have colinear embeddings")
+                res = False
+    return res
+
+
 manual = {
-    "EOS":              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
-    ".":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-    "?":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
-    "!":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2],
+    "EOS":              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3],
+    ".":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3],
+    "?":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+    "!":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
     ",":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    ":":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+    ":":                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
 
     "a":                [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0],
     "akesi":            [1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 2, 2, 0, 0],
@@ -213,10 +235,12 @@ manual = {
     # "tuli":           [0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0],
 }
 
-import torch
-manual_tensor = torch.Tensor(list(manual.values()))
+
+manual_tensor = _make_normalized_tensor(manual)
+
 
 if __name__ == "__main__":
-    if find_duplicate_embeddings(manual) and \
-            consistency_check(manual, token_list):
+    if find_duplicate_embeddings(manual) \
+            and consistency_check(manual, token_list) \
+            and colinear_check(manual_tensor):
         print("Consistency checks passed!")
