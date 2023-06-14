@@ -42,8 +42,9 @@ class TokiDataset(Dataset):
         dix = self.tokenized[idx: idx + self.context_window + 1]
         """
         arrange data and targets so that the first i elements of x
-        will be asked to predict the i-th element of y. Notice that
-        the eventual language model will actually make block_size
+        will be asked to predict the i-th element of y. 
+        
+        Notice that the eventual language model will actually make block_size
         individual predictions at the same time based on this data,
         so we are being clever and amortizing the cost of the forward
         pass of the network. So for example if block_size is 4, then
@@ -62,7 +63,7 @@ class TokiDataset(Dataset):
         for a batched input of integers X (B, T) where B is batch size and
         T is block_size and Y (B, T), the network will during training be
         simultaneously training to make B*T predictions, all at once! Of course,
-        at test time we can paralellize across batch B, but unlike during training
+        at test time we can parallelize across batch B, but unlike during training
         we cannot parallelize across the time dimension T - we have to run
         a forward pass of the network to recover the next single character of the 
         sequence along each batch dimension, and repeatedly always feed in a next
