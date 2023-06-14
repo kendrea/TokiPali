@@ -36,16 +36,22 @@ def find_duplicate_embeddings(dictionary):
             value_to_keys[value] = []
         value_to_keys[value].append(key)
 
+    res = True
     for value, keys in value_to_keys.items():
         if len(keys) > 1:
             print("Keys with value", value, ":", keys)
+            res = False
+    return res
 
 
 def consistency_check(embeddings, tokens):
     """
     Ensure the list of embeddings and the list of tokens are the same
     """
+    res = True
     if set(embeddings.keys()) != set(tokens):
+        res = False
+        print("Definition list and token list don't match...")
         for word in tokens:
             if word not in embeddings:
                 print("missing embedding for", word)
@@ -59,7 +65,9 @@ def consistency_check(embeddings, tokens):
     for i, (e, t) in enumerate(zip(embeddings, token_list)):
         if e != t:
             print(f"Mismatch at idx {i} with embedding {e} and token {t}")
+            res = False
             break
+    return res
 
 
 manual = {
@@ -206,5 +214,6 @@ manual = {
 }
 
 if __name__ == "__main__":
-    find_duplicate_embeddings(manual)
-    consistency_check(manual, token_list)
+    if find_duplicate_embeddings(manual) and \
+            consistency_check(manual, token_list):
+        print("Consistency checks passed!")

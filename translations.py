@@ -352,15 +352,17 @@ tokipona_to_en['leko'] = [  # 72% usage
 #     TranslationEntry(Part.NUMBER, "three")]
 
 # ensure token list and definition list match
-_t = set(tokipona_to_en.keys())
-_w = set(normal_words)
-if _t != _w:
-    # check to see what's missing
-    for word in normal_words:
-        if not tokipona_to_en.get(word):
-            print("missing definition for", word)
+if __name__ == "__main__":
+    if set(tokipona_to_en.keys()) != set(normal_words):
+        print("Definition list and token list don't match...")
+        # check to see what's missing
+        for word in normal_words:
+            if not tokipona_to_en.get(word):
+                print("missing definition for", word)
 
-    # check to see what's extra
-    for key in tokipona_to_en:
-        if key not in normal_words:
-            print("extra definition for", key)
+        # check to see what's extra
+        for key in tokipona_to_en:
+            if key not in normal_words:
+                print("extra definition for", key)
+    else:
+        print("Consistency check passed!")
