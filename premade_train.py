@@ -97,6 +97,8 @@ mconf = GPTConfig(
     n_layer=5,  # 5
     n_head=5,  # 5
     n_embd=65,  # 65
+    freeze_embeds=True,
+    custom_embeds=True,
 )
 
 model = GPT(mconf)

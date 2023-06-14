@@ -132,15 +132,26 @@ class Block(nn.Module):
         x = x + self.mlp(self.ln2(x))
         return x
 
+from embeddings import manual_tensor
 
 class GPT(nn.Module):
     """the full GPT language model, with a context size of block_size"""
 
     def __init__(self, config):
         super().__init__()
+        self.config = config
 
         # input embedding stem
-        self.tok_emb = nn.Embedding(config.vocab_size, config.n_embd)
+        if config.custom_embeds:
+            padding_len = config.n_embd-manual_tensor.shape[1]
+            padding = torch.zeros(config.vocab_size, padding_len)
+            pretrained = torch.hstack((manual_tensor, padding))
+            # self.tok_emb = nn.Embedding(config.vocab_size, config.n_embd, _freeze=config.freeze_embeds)
+            # self.tok_emb.weight = torch.nn.parameter.Parameter(pretrained, requires_grad=not config.freeze_embeds)
+            self.tok_emb = nn.Embedding.from_pretrained(pretrained, freeze=config.freeze_embeds)
+        else:
+            self.tok_emb = nn.Embedding(config.vocab_size, config.n_embd, _freeze=config.freeze_embeds)
+
         self.pos_emb = nn.Parameter(torch.zeros(1, config.block_size, config.n_embd))
         self.drop = nn.Dropout(config.embd_pdrop)
         # transformer
@@ -161,6 +172,8 @@ class GPT(nn.Module):
 
     def _init_weights(self, module):
         if isinstance(module, (nn.Linear, nn.Embedding)):
+            if isinstance(module, nn.Embedding) and self.config.custom_embeds:
+                return
             module.weight.data.normal_(mean=0.0, std=0.02)
             if isinstance(module, nn.Linear) and module.bias is not None:
                 module.bias.data.zero_()
