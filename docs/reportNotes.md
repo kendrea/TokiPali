@@ -79,3 +79,6 @@ The Chinchilla authors use three approaches:
 		- lots of training data
 		- don't want to share statistical information between words
 	- we have a small number of tokens, and tokens are less correlated in Toki Pona than in English, but we don't have much training data and it's fine to share statistical information between words
+
+## Handcrafted embedding
+- verified that none of the embeddings are collinear

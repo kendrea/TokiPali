@@ -17,6 +17,7 @@ from torch.nn import functional as F
 import math
 from torch.utils.data import Dataset
 from tokenizer import string_to_tokens, word_to_token, tokens_to_tokipona, tokens_to_english
+import evaluations
 
 class TokiDataset(Dataset):
 
@@ -94,9 +95,9 @@ from modelling.model import GPT, GPTConfig
 mconf = GPTConfig(
     vocab_size,
     dataset.context_window,
-    n_layer=5,  # 5
-    n_head=5,  # 5
-    n_embd=65,  # 65
+    n_layer=6,  # 5
+    n_head=4,  # 5
+    n_embd=64,  # 65,
     freeze_embeds=True,
     custom_embeds=True,
 )
@@ -124,22 +125,24 @@ def train_new():
 
 def train_continue():
     trainer = Trainer(model, dataset, None, tconf, mconf)
-    trainer.model.module.load_state_dict(torch.load("checkpoint.pt"))
+    trainer.model.module.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
     trainer.train()
     #trainer.save_checkpoint()
 
 from modelling.utils import sample
 def infer(x):
-    model.load_state_dict(torch.load("checkpoint.pt"))
+    model.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
     ys = sample(model, torch.as_tensor(string_to_tokens(x))[None, ...], 1, temperature=10.0, sample=False, top_k=10)
     print("ys", ys)
     y = ys[0]
-    print(tokens_to_tokipona(y.tolist()))
-    #print(solution)
+    return tokens_to_tokipona(y.tolist())
+    # print(solution)
 
     #trainer.save_checkpoint()
 
 if __name__ == "__main__":
-    #infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
-    train_new()
+    inference = infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
+    print(inference)
+    evaluations.evaluate(inference)
+    # train_new()
     #train_continue()
