@@ -95,11 +95,11 @@ from modelling.model import GPT, GPTConfig
 mconf = GPTConfig(
     vocab_size,
     dataset.context_window,
-    n_layer=6,  # 5
+    n_layer=7,  # 5
     n_head=4,  # 5
-    n_embd=64,  # 65,
+    n_embd=72,  # 65,
     freeze_embeds=True,
-    custom_embeds=True,
+    custom_embeds=False,
 )
 
 model = GPT(mconf)
@@ -109,7 +109,7 @@ from modelling.trainer import Trainer, TrainerConfig
 # initialize a trainer instance and kick off training
 tconf = TrainerConfig(
     max_epochs=10,
-    batch_size=256*2,
+    batch_size=128*3+64,
     learning_rate=5e-3,
     lr_decay=0.90,
     warmup_tokens=512*30,
@@ -136,8 +136,11 @@ def infer(x):
     return tokens_to_tokipona(y.tolist())
 
 if __name__ == "__main__":
-    inference = infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
-    print(inference)
-    evaluations.evaluate(inference)
+    train_new()
+    #print(model)
+    pass
+    #inference = infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
+    #print(inference)
+    #evaluations.evaluate(inference)
     # train_new()
     #train_continue()
