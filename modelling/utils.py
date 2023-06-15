@@ -56,3 +56,19 @@ def sample(model, x, steps, temperature=1.0, sample=False, top_k=None, print_top
         x = torch.cat((x, ix[:, :1]), dim=1)
 
     return x
+
+@torch.no_grad()
+def next_distribution(model, x):
+    """
+    Return distribution over possible next tokens, conditioned on x, a list of context tokens.
+    """
+    block_size = model.get_block_size()
+    # clip context to block_size
+    x_cond = (
+        x if x.shape[1] <= block_size else x[:, -block_size:]
+    )
+    logits = model(x_cond)
+    if logits.shape[1]:
+        logits = logits[:, -1, :]  # just get next token (final) prediction
+    probs = F.softmax(logits, dim=-1)
+    return probs
