@@ -124,21 +124,16 @@ def train_new():
     trainer.train()
 
 def train_continue():
+    model.load_state_dict(torch.load("checkpoint.pt"))
     trainer = Trainer(model, dataset, None, tconf, mconf)
-    trainer.model.module.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
     trainer.train()
-    #trainer.save_checkpoint()
 
 from modelling.utils import sample
 def infer(x):
     model.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
-    ys = sample(model, torch.as_tensor(string_to_tokens(x))[None, ...], 1, temperature=10.0, sample=False, top_k=10)
-    print("ys", ys)
+    ys = sample(model, torch.as_tensor(string_to_tokens(x))[None, ...], 1, temperature=10.0, sample=False, top_k=10, print_top=10)
     y = ys[0]
     return tokens_to_tokipona(y.tolist())
-    # print(solution)
-
-    #trainer.save_checkpoint()
 
 if __name__ == "__main__":
     inference = infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
