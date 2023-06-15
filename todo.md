@@ -2,10 +2,12 @@
 - [x] tokenizer
 - [x] manual embedding
 - [ ] train
-	- [ ] decrease number of parameters all the way to Kaplan, Chinchilla
-	- [ ] change temperature in `infer()` in `premade_train.py`
+	- [x] randomly initialized learned embeddings
+	- [ ] randomly initialized frozen embeddings
+	- [ ] manually initialized learned embeddings
+	- [ ] manually initialized frozen embeddings
 - [x] post-processing
 - [ ] evaluation
+	- [ ] change temperature in `infer()` in `premade_train.py`
 	- [ ] perplexity
-	- [ ] manual
 - [ ] paper
