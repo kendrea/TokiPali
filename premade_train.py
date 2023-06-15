@@ -17,7 +17,6 @@ from torch.nn import functional as F
 import math
 from torch.utils.data import Dataset
 from tokenizer import string_to_tokens, word_to_token, tokens_to_tokipona, tokens_to_english
-import evaluations
 
 class TokiDataset(Dataset):
 
@@ -109,38 +108,26 @@ from modelling.trainer import Trainer, TrainerConfig
 # initialize a trainer instance and kick off training
 tconf = TrainerConfig(
     max_epochs=10,
-    batch_size=128*3+64,
+    batch_size=256*2,
     learning_rate=5e-3,
-    lr_decay=0.999,
+    lr_decay=0.90,
     warmup_tokens=512*30,
     final_tokens=2*len(dataset)*dataset.context_window,
     num_workers=4,
     ckpt_path="checkpoint.pt",
 )
 
-
 def train_new():
     trainer = Trainer(model, dataset, None, tconf, mconf)
     trainer.train()
 
 def train_continue():
-    model.load_state_dict(torch.load("checkpoint.pt"))
     trainer = Trainer(model, dataset, None, tconf, mconf)
+    trainer.model.module.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
     trainer.train()
-
-from modelling.utils import sample
-def infer(x):
-    model.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
-    ys = sample(model, torch.as_tensor(string_to_tokens(x))[None, ...], 1, temperature=10.0, sample=False, top_k=10, print_top=10)
-    y = ys[0]
-    return tokens_to_tokipona(y.tolist())
+    #trainer.save_checkpoint()
 
 if __name__ == "__main__":
-    train_new()
-    #print(model)
-    pass
-    #inference = infer("jan ali li kama lon nasin ni: ona li ken tawa li ken pali. jan ali li kama lon sama. jan ali li jo e ken pi pilin suli. jan ali li ken pali e wile pona ona. jan ali li jo e ken pi sona pona e ken pi pali pona. jan ali li wile pali nasin ni: ona li jan pona pi jan")
-    #print(inference)
-    #evaluations.evaluate(inference)
+    print("uncomment to choose what you want this program to even do")
     # train_new()
-    #train_continue()
+    # train_continue()
