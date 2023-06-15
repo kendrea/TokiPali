@@ -99,7 +99,7 @@ mconf = GPTConfig(
     n_head=4,  # 5
     n_embd=72,  # 65,
     freeze_embeds=True,
-    custom_embeds=False,
+    custom_embeds=True,
 )
 
 model = GPT(mconf)
@@ -111,7 +111,7 @@ tconf = TrainerConfig(
     max_epochs=10,
     batch_size=128*3+64,
     learning_rate=5e-3,
-    lr_decay=0.90,
+    lr_decay=0.999,
     warmup_tokens=512*30,
     final_tokens=2*len(dataset)*dataset.context_window,
     num_workers=4,
