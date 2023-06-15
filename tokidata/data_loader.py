@@ -50,7 +50,28 @@ def _process_documents(chapters: pd.DataFrame) -> npt.NDArray:
     magazines = chapters[chapters['content_type'] == 'magazine']['tok'].to_numpy()
     
     poems = chapters[chapters['content_type'] == 'poem']['tok'].to_numpy()
-    return np.concatenate((articles, magazines, poems))
+
+    bible = chapters[chapters['content_type'] == 'biblical text']
+    # Filter out gospel of John
+    # We have a bigger version elsewhere
+    bible = bible.loc[bible["name"] != "gospel of john.txt"]
+    bible = bible['tok'].to_numpy()
+
+    story = chapters[chapters['content_type'] == 'story']
+
+    # Remove more bible stuff
+    story = story.drop(story.index[[0, 1, 2, 3]])
+    story = story['tok'].to_numpy()
+
+    blogpost = chapters[chapters['content_type'] == 'blog post']
+    blogpost = blogpost['tok'].to_numpy()
+
+    # Good amount of noise
+    chat = chapters[chapters['content_type'] == 'chat']
+    chat = chat['tok'].to_numpy()
+
+    # encyclopedia seems to have extreme noise
+    return np.concatenate((articles, magazines, poems, bible, story, blogpost, chat))
 
 
 def load_data(datatype: StrEnum) -> npt.NDArray:

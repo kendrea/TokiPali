@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
+from vocab import token_to_word
 
 
 def set_seed(seed):
@@ -20,7 +21,7 @@ def top_k_logits(logits, k):
 
 
 @torch.no_grad()
-def sample(model, x, steps, temperature=1.0, sample=False, top_k=None):
+def sample(model, x, steps, temperature=1.0, sample=False, top_k=None, print_top=0):
     """
     take a conditioning sequence of indices in x (of shape (b, t)) and predict the next token in
     the sequence, feeding the predictions back into the model each time. Clearly the sampling
@@ -42,11 +43,16 @@ def sample(model, x, steps, temperature=1.0, sample=False, top_k=None):
         # apply softmax to convert to probabilites
         probs = F.softmax(logits, dim=-1)
         # sample from the distribution or take the most likely
+
         if sample:
-            ix = torch.multinomial(probs, num_samples=1)
+            ix = torch.multinomial(probs, num_samples=10)
         else:
-            _, ix = torch.topk(probs, k=1, dim=-1)
+            _, ix = torch.topk(probs, k=10, dim=-1)
+
+        if print_top > 0:
+            print(f"Top {print_top}:", ' '.join(token_to_word[token.item()] for token in ix[0]))
+
         # append to the sequence and continue
-        x = torch.cat((x, ix), dim=1)
+        x = torch.cat((x, ix[:, :1]), dim=1)
 
     return x
