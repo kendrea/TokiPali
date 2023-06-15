@@ -82,3 +82,4 @@ The Chinchilla authors use three approaches:
 
 ## Handcrafted embedding
 - verified that none of the embeddings are collinear
+- (Context: green is custom nonfrozen, blue is custom frozen in a training loss plot.) Possible explanation for green doing better at first, but blue catching up: when custom labels are frozen, the earlier model doesn't have enough understanding to use some of the embedding axes since they're too abstract. Instead, gradient descent tweaks them to something more immediately understandable/useful (empirical question for "future work": do these initial tweaks remove useful information, and are these changes reversed later?). But then by the end the model learns enough complex relationships that it can figure out how to use the provided labels effectively so blue catches up.
