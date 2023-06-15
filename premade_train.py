@@ -101,7 +101,7 @@ mconf = GPTConfig(
     custom_embeds=True,
 )
 
-model = GPT(mconf)
+model = None
 
 from modelling.trainer import Trainer, TrainerConfig
 
@@ -127,7 +127,13 @@ def train_continue():
     trainer.train()
     #trainer.save_checkpoint()
 
+def load_model(filename: str):
+    new_model = GPT(mconf)
+    new_model.load_state_dict(torch.load(filename, map_location=torch.device('cpu')))
+    return new_model
+
 if __name__ == "__main__":
+    model = GPT(mconf)
     print("uncomment to choose what you want this program to even do")
     # train_new()
     # train_continue()
