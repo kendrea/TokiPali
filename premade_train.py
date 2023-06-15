@@ -127,9 +127,10 @@ def train_continue():
     trainer.train()
     #trainer.save_checkpoint()
 
-def load_model(filename: str):
+def load_model(filename: str | None):
     new_model = GPT(mconf)
-    new_model.load_state_dict(torch.load(filename, map_location=torch.device('cpu')))
+    if filename is not None:
+        new_model.load_state_dict(torch.load(filename))
     return new_model
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ models = {
 	"fixed handcrafted embeddings": load_model("trainings/10epochCustomFrozen.pt"),
 	"learned embeddings from random": load_model("trainings/10epochsNormal.pt"),
 	"fixed random embeddings": load_model("trainings/10epochFrozen.pt"),
+	"no training": load_model(None),
 }
 
 test_strings = [
@@ -43,7 +44,60 @@ test_strings = [
 		mi wile e ni: jan li sona ala e toki pi jan ante". 
 		jan sewi Jawe li kama e ni: jan li lon ma mute li ken ala pali e tomo. 
 		nimi pi ma tomo ni li Pape tan ni: jan sewi Jawe li pakala e toki pi jan ali. 
-		jan sewi Jawe li tawa e jan tawa ma mute tan ma tomo Pape."""
+		jan sewi Jawe li tawa e jan tawa ma mute tan ma tomo Pape.""",
+    """mi lon.
+        mi lon e tomo mi e ma tomo e ma.
+        ma li lon e sike suno.
+        suno li lon e ale.
+        tenpo ni la mi kepeken lawa e ni: tenpo ni li lon.
+        lawa mi li jo e ijo mute tan toki mi li lon ma pona pi toki pona.
+        jan ante li lon, kin.
+        mi ken toki tawa jan mute tan jan mute li lon.
+        mi sona e ni.
+    """,
+    """tenpo ni li tenpo suno open.
+    tenpo pini lili la mi lape ala.
+    tenpo pini li lon e tenpo pini.
+    ni li lon.
+    tenpo kama la mi moku e pan.
+    tenpo kama li lon e tenpo kama.
+    en pan li lon tenpo kama.
+    ni li lon, kin.
+    mi sona e ni.
+    """,
+    """tenpo kama li tenpo ni.
+    mi moku e pan.
+    mi kepeken lawa e ni: 
+    mi moku e pan.
+    toki ni li ni: pan li moku.
+    pan kama moku tan mi.
+    taso, pan kama moku tawa mi, taso.
+    tenpo ni la, pan li moku tawa mi.
+    mi taso.
+    """,
+    """mi lon e tomo mi.
+    toki ni li ni: tomo mi li lon.
+    tomo mi kama lon tan mi.
+    taso, tomo mi li lon tawa mi, taso.
+    tenpo ni la, tomo mi li lon tawa mi.
+    mi taso.
+    """,
+    """mi kepeken lawa pini.
+    tenpo kama lili la… ona li weka.
+    lawa mi li weka.
+    tomo mi pi sona toki li weka.
+    sona pi jan ale li open tawa mi.
+    tenpo mi li sama e kulupu e lipu e sona.
+    taso… pilin mi li weka.
+    pan en moku li lon ala.
+    en tomo mi en ma tomo en ma en suno en sike li lon ala.
+    tenpo ni en tenpo pini en tenpo kama li lon ala.
+    jan ante li lon ala; ma pona pi toki pona li lon ala.
+    ijo mute pi lawa mi lon ala.
+    toki mi li lon ala.
+    lawa mi li lon ala.
+    mi lon ala.
+    """
 ]
 
 test_token_seq = list(map(string_to_tokens, test_strings))
@@ -62,7 +116,7 @@ def perplexity(model, tokens):
 	length = len(tokens)
 	for i in range(1, length-1):
 		context = tokens[:i]
-		correct_next_token = tokens[i+1]
+		correct_next_token = tokens[i]
 		probs = next_distribution(model, torch.as_tensor(context, dtype=torch.int)[None, ...])
 		# print(probs)
 		predicted_prob_of_correct = probs[:,correct_next_token]
