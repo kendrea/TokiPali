@@ -157,7 +157,7 @@ def load_model(filename: str | None, scaling):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-            prog="Toki Pali",
+            prog="train.py",
             description="Scaled GPT for Toki Pona",
     )
 
