@@ -1,4 +1,4 @@
-# TokiPali: Word Builder
+# TokiPali: Word Maker
 Group project for AI 535: "Word Maker" Toki Pona next-token prediction
 
 ## Usage
