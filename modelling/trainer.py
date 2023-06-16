@@ -181,7 +181,6 @@ class Trainer:
         del hparams['betas']
         for epoch in range(config.max_epochs):
             loss = run_epoch("train")
-            print(type(loss.item()), loss.item())
             writer.add_hparams(hparams, {'hparam/loss': loss.item()})
             writer.add_embedding(model.module.tok_emb.weight, token_list)
 

@@ -31,9 +31,13 @@ def _make_normalized_tensor(dictionary):
         norm = np.linalg.norm(vec)
         if norm == 0:
             return vec
-        return vec / norm
+        normalized = vec * np.sqrt(2)
+        return normalized
 
-    return torch.Tensor(np.array(list(map(normalize, dictionary.values()))))
+    normalized_vec = np.array(list(map(normalize, dictionary.values())))
+    # Fix the mean close to 0
+    normalized_vec -= 0.1
+    return torch.Tensor(normalized_vec)
 
 
 def find_duplicate_embeddings(dictionary):

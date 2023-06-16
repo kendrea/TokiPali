@@ -10,12 +10,12 @@ logging.basicConfig(
 from modelling.utils import set_seed
 set_seed(42)
 
-import numpy as np
 import torch
-import torch.nn as nn
 from torch.nn import functional as F
-import math
 from torch.utils.data import Dataset
+import argparse
+import pathlib
+
 from tokenizer import string_to_tokens, word_to_token, tokens_to_tokipona, tokens_to_english
 
 class TokiDataset(Dataset):
@@ -91,61 +91,94 @@ dataset = TokiDataset(load_all_data().tolist(), context_window)
 
 from modelling.model import GPT, GPTConfig
 
-mconf = GPTConfig(
-    vocab_size,
-    dataset.context_window,
-    n_layer=7,  # 5
-    n_head=4,  # 5
-    n_embd=72,  # 65,
-    freeze_embeds=True,
-    custom_embeds=True,
-)
+def kaplan_config(freeze=False, custom=False):
+    return GPTConfig(
+        vocab_size,
+        dataset.context_window,
+        n_layer=7,  # 5
+        n_head=4,  # 5
+        n_embd=72,  # 65,
+        freeze_embeds=freeze,
+        custom_embeds=custom,
+    )
 
-chinchila_config = GPTConfig(
-    vocab_size,
-    dataset.context_window,
-    n_layer=4,  # 5
-    n_head=4,  # 5
-    n_embd=28,  # 65,
-    freeze_embeds=True,
-    custom_embeds=True,
-)
+def chinchila_config(freeze=False, custom=False):
+    return GPTConfig(
+        vocab_size,
+        dataset.context_window,
+        n_layer=4,  # 5
+        n_head=4,  # 5
+        n_embd=28,  # 65,
+        freeze_embeds=freeze,
+        custom_embeds=custom,
+    )
 
 model = None
 
 from modelling.trainer import Trainer, TrainerConfig
 
 # initialize a trainer instance and kick off training
-tconf = TrainerConfig(
-    max_epochs=10,
-    batch_size=256*2,
-    learning_rate=5e-3,
-    lr_decay=0.90,
-    warmup_tokens=512*30,
-    final_tokens=2*len(dataset)*dataset.context_window,
-    num_workers=4,
-    ckpt_path="checkpoint.pt",
-)
 
-def train_new():
+def get_trainer_config(checkpoint):
+    return TrainerConfig(
+        max_epochs=1,
+        batch_size=256*2,
+        learning_rate=5e-3,
+        lr_decay=0.9999,
+        warmup_tokens=512*30,
+        final_tokens=2*len(dataset)*dataset.context_window,
+        num_workers=4,
+        ckpt_path=checkpoint,
+    )
+
+def train_new(mconf, tconf):
+    model = GPT(mconf)
     trainer = Trainer(model, dataset, None, tconf, mconf)
     trainer.train()
 
-def train_continue():
+def train_continue(mconf, tconf):
+    model = GPT(mconf)
     trainer = Trainer(model, dataset, None, tconf, mconf)
-    trainer.model.module.load_state_dict(torch.load("checkpoint.pt", map_location=torch.device('cpu')))
+    trainer.model.module.load_state_dict(torch.load(tconf.ckpt_path))
     trainer.train()
     #trainer.save_checkpoint()
 
-def load_model(filename: str | None):
-    new_model = GPT(mconf)
+def load_model(filename: str | None, scaling):
+    if scaling == "Kaplan":
+        new_model = GPT(kaplan_config())
+    elif scaling == "Chinchilla":
+        new_model = GPT(chinchila_config())
+    else:
+        raise ValueError(f"Invalid scaling: {scaling}")
+
     if filename is not None:
         new_model.load_state_dict(torch.load(filename))
     return new_model
 
 if __name__ == "__main__":
-    #model = GPT(mconf)
-    model = GPT(mconf)
-    print("uncomment to choose what you want this program to even do")
-    # train_new()
-    # train_continue()
+    parser = argparse.ArgumentParser(
+            prog="Toki Pali",
+            description="Scaled GPT for Toki Pona",
+    )
+
+    parser.add_argument("task", choices=['new', 'resume'], help='start new or resume training')
+    parser.add_argument("--checkpoint", '-c', help='weights to use for training/inference',  type=pathlib.Path, default=pathlib.Path("trainings/checkpoint.pt"))
+    parser.add_argument("--scaling", default="kaplan", choices=['kaplan', 'chinchilla'], help="choose scalling laws used for the model.")
+    parser.add_argument("--custom-embedding", '-e', action="store_true", help="enable handcrafted word embeddings (random by default)")
+    parser.add_argument("--frozen-embedding", '-f', action="store_true", help="freeze embeddings such that they remain unchanged throughout the training process.")
+    args = parser.parse_args()
+
+    if args.scaling == "chinchilla":
+        mconf = chinchila_config(args.frozen_embedding, args.custom_embedding)
+    else:
+        mconf = kaplan_config(args.frozen_embedding, args.custom_embedding)
+
+    tconf = get_trainer_config(str(args.checkpoint))
+
+    if args.task == "new":
+        logging.info(f"Training using {args.scaling} scaling. Custom Embeds: {args.custom_embedding}, Embeds Frozen: {args.frozen_embedding}")
+        train_new(mconf, tconf)
+
+    elif args.task == "resume":
+        logging.info(f"Resuming training from {args.checkpoint} with {args.scaling} scaling. Custom Embeds: {args.custom_embedding}, Embeds Frozen: {args.frozen_embedding}")
+        train_continue(mconf, tconf)
