@@ -101,6 +101,16 @@ mconf = GPTConfig(
     custom_embeds=True,
 )
 
+chinchila_config = GPTConfig(
+    vocab_size,
+    dataset.context_window,
+    n_layer=4,  # 5
+    n_head=4,  # 5
+    n_embd=28,  # 65,
+    freeze_embeds=True,
+    custom_embeds=True,
+)
+
 model = None
 
 from modelling.trainer import Trainer, TrainerConfig
@@ -134,6 +144,7 @@ def load_model(filename: str | None):
     return new_model
 
 if __name__ == "__main__":
+    #model = GPT(mconf)
     model = GPT(mconf)
     print("uncomment to choose what you want this program to even do")
     # train_new()
